@@ -27,7 +27,7 @@ spotify-lyrics
 
 ## example i3 settings for the script
 ```i3
-bindsym $mod+Shift+Home exec st -n Lyrics -e lyrics
+bindsym $mod+Shift+Home exec st -n Lyrics -e spotify-lyrics
 for_window [instance="Lyrics"] floating enable; [instance="Lyrics"] move position center
 for_window [instance="Lyrics"] resize set 644 388
 ```
