@@ -16,7 +16,7 @@
 ```bash
 git clone https://github.com/goktug97/yet-another-spotify-lyrics
 cd yet-another-spotify-lyrics
-sudo python setup.py install
+python setup.py install
 ```
 
 ## Usage
