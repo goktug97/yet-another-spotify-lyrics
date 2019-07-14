@@ -9,7 +9,7 @@
 
 ## Screenshot
 
-![Lyrics-Screenshot](https://github.com/goktug97/yet-another-spotify-lyrics/blob/master/lyrics-screenshot.png)
+![Lyrics-Screenshot](https://github.com/goktug97/yet-another-spotify-lyrics/blob/master/lyrics-screenshot.jpg)
 
 ## Install
 
