@@ -91,7 +91,7 @@ def main():
     artist_directory = os.path.join(lyrics_directory, artist.replace('/', ''))
     image_directory = os.path.join(artist_directory, 'album_arts')
     lyrics_file = os.path.join(artist_directory, song.replace('/', ''))
-    image_file = f'{os.path.join(image_directory, album)}.png'
+    image_file = '{}.png'.format(os.path.join(image_directory, album))
 
     if not os.path.isdir(lyrics_directory): os.mkdir(lyrics_directory)
     if not os.path.isdir(artist_directory): os.mkdir(artist_directory)
@@ -115,12 +115,12 @@ def main():
         album_cover.visibility = ueberzug.Visibility.VISIBLE
 
         p = Popen('less', stdin=PIPE)
-        p.stdin.write(f'Artist: {artist}\n'.encode(encoding='UTF-8'))
-        p.stdin.write(f'Album: {album}\n'.encode(encoding='UTF-8'))
-        p.stdin.write(f'Song: {song}\n'.encode(encoding='UTF-8'))
+        p.stdin.write('Artist: {}\n'.format(artist).encode(encoding='UTF-8'))
+        p.stdin.write('Album: {}\n'.format(album).encode(encoding='UTF-8'))
+        p.stdin.write('Song: {}\n'.format(song).encode(encoding='UTF-8'))
         for line in lyrics.split('\n'):
             p.stdin.write(
-                f'{textwrap.fill(line, columns//2-2)}\n'.encode(encoding='UTF-8'))
+                '{}\n'.format(textwrap.fill(line, columns//2-2)).encode(encoding='UTF-8'))
         p.stdin.close()
         p.wait()
 
