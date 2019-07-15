@@ -33,7 +33,7 @@ def get_lyrics(song_name):
     link_start = result.find('http://www.metrolyrics.com')
 
     if(link_start == -1):
-        return("Lyrics isn't found on Metrolyrics")
+        return("Lyrics not found on Metrolyrics")
 
     link_end = result.find('html', link_start + 1)
     link = result[link_start:link_end + 4]
