@@ -149,9 +149,9 @@ def main(canvas):
     os.system('clear')
     current_line = 0
     lines = lyrics.split('\n')
-    print(f'Artist: {artist}')
-    print(f'Album: {album}')
-    print(f'Song: {song}')
+    print(f'\033[95mArtist: {artist}\033[0m')
+    print(f'\033[95mAlbum: {album}\033[0m')
+    print(f'\033[95mSong: {song}\033[0m')
     hide_cursor()
     old_rows, old_columns = rows, columns
     with KeyPoller() as key_poller:
@@ -161,9 +161,9 @@ def main(canvas):
                 album_cover.x = columns//2
                 os.system('clear')
                 sys.stdout.write("\033[0;0H")
-                print(f'Artist: {artist}')
-                print(f'Album: {album}')
-                print(f'Song: {song}')
+                print(f'\033[95mArtist: {artist}\033[0m')
+                print(f'\033[95mAlbum: {album}\033[0m')
+                print(f'\033[95mSong: {song}\033[0m')
                 old_rows = rows
                 old_columns = columns
 
@@ -176,7 +176,8 @@ def main(canvas):
             for i in range(current_line, (min(rows+current_line-5,
                 len(wrapped_lines)))):
                 sys.stdout.write('\x1b[2K')
-                print(wrapped_lines[i])
+                string = f'\033[1m{wrapped_lines[i]}\033[0m'
+                print(string)
 
             c = key_poller.poll()
             if c == 'q':
@@ -185,7 +186,7 @@ def main(canvas):
                 break
             if c == 'j':
                 current_line += 1
-                current_line = min(current_line, rows)
+                current_line = min(current_line, len(wrapped_lines)-1)
             if c == 'k':
                 current_line += -1
                 current_line = max(current_line, 0)
