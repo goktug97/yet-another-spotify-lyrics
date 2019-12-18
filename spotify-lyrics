@@ -4,10 +4,16 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import dbus
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 import errno
 import ueberzug.lib.v0 as ueberzug
 import textwrap
+import time
+import atexit
+
+import termios
+import select
+import sys
 
 from urllib.request import urlretrieve
 try:
@@ -16,6 +22,34 @@ except ImportError:
     from urllib import quote_plus
 
 from pathlib import Path
+
+def hide_cursor():
+    sys.stdout.write("\033[?25l")
+    sys.stdout.flush()
+
+def show_cursor():
+    sys.stdout.write("\033[?25h")
+    sys.stdout.flush()
+
+class KeyPoller():
+    def __enter__(self):
+        self.fd = sys.stdin.fileno()
+        self.new_term = termios.tcgetattr(self.fd)
+        self.old_term = termios.tcgetattr(self.fd)
+
+        self.new_term[3] = (self.new_term[3] & ~termios.ICANON & ~termios.ECHO)
+        termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.new_term)
+
+        return self
+
+    def __exit__(self, type, value, traceback):
+        termios.tcsetattr(self.fd, termios.TCSAFLUSH, self.old_term)
+
+    def poll(self):
+        dr,dw,de = select.select([sys.stdin], [], [], 0.0)
+        if not dr == []:
+            return sys.stdin.read(1)
+        return None
 
 # https://github.com/bhrigu123/Instant-Lyrics/blob/29e2a817fee3853a6a0f0bdc825145fd4004d1e1/src/lyrics.py#L11
 def get_lyrics(song_name):
@@ -27,7 +61,7 @@ def get_lyrics(song_name):
            'Accept-Language': 'en-US,en;q=0.8',
            'Connection': 'keep-alive'}
 
-    url = 'http://www.google.com/search?q=' + name
+    url = 'http://www.google.com/search?q={}'.format(name)
 
     result = requests.get(url, headers=hdr).text
     link_start = result.find('http://www.metrolyrics.com')
@@ -39,12 +73,9 @@ def get_lyrics(song_name):
     link = result[link_start:link_end + 4]
 
 
-    r = requests.get(link, headers={
-                               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel'
-                               'Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, '
-                               'like Gecko) Chrome/55.0.2883.95 Safari/537.36'
-                               }
-                               )
+    r = requests.get(link, headers={ 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel'
+        'Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, '
+        'like Gecko) Chrome/55.0.2883.95 Safari/537.36' })
     lyrics_html = r.content
 
     soup = BeautifulSoup(lyrics_html, "lxml", from_encoding='UTF-8')
@@ -80,7 +111,8 @@ def get_spotify_song_data():
         'utf-8').decode('utf-8').replace("&", "&amp;")
     return title, artist, album, art_url
 
-def main():
+@ueberzug.Canvas()
+def main(canvas):
     rows, columns = map(int, os.popen('stty size', 'r').read().split())
     try:
         song, artist, album, art_url = get_spotify_song_data()
@@ -108,22 +140,68 @@ def main():
     if not os.path.exists(image_file):
         urlretrieve(art_url, image_file)
 
-    with ueberzug.Canvas() as c:
-        album_cover = c.create_placement('album_cover', x=columns//2, y=4,
-                scaler=ueberzug.ScalerOption.COVER.value)
-        album_cover.path = image_file
-        album_cover.visibility = ueberzug.Visibility.VISIBLE
+    album_cover = canvas.create_placement('album_cover',
+            x=columns//2, y=4,
+            scaler=ueberzug.ScalerOption.COVER.value)
+    album_cover.path = image_file
+    album_cover.visibility = ueberzug.Visibility.VISIBLE
 
-        p = Popen('less', stdin=PIPE)
-        p.stdin.write('Artist: {}\n'.format(artist).encode(encoding='UTF-8'))
-        p.stdin.write('Album: {}\n'.format(album).encode(encoding='UTF-8'))
-        p.stdin.write('Song: {}\n'.format(song).encode(encoding='UTF-8'))
-        for line in lyrics.split('\n'):
-            p.stdin.write(
-                '{}\n'.format(textwrap.fill(line, columns//2-2)).encode(encoding='UTF-8'))
-        p.stdin.close()
-        p.wait()
+    os.system('clear')
+    current_line = 0
+    lines = lyrics.split('\n')
+    print(f'Artist: {artist}')
+    print(f'Album: {album}')
+    print(f'Song: {song}')
+    hide_cursor()
+    old_rows, old_columns = rows, columns
+    with KeyPoller() as key_poller:
+        while True:
+            rows, columns = map(int, os.popen('stty size', 'r').read().split())
+            if old_rows != rows or old_columns != columns:
+                album_cover.x = columns//2
+                os.system('clear')
+                sys.stdout.write("\033[0;0H")
+                print(f'Artist: {artist}')
+                print(f'Album: {album}')
+                print(f'Song: {song}')
+                old_rows = rows
+                old_columns = columns
 
+            wrapped_lines = []
+            for line in lines:
+                wrapped_lines.extend(
+                        textwrap.fill(line, columns//2-2).split('\n'))
+
+            sys.stdout.write('\033[5;0H')
+            for i in range(current_line, (min(rows+current_line-5,
+                len(wrapped_lines)))):
+                sys.stdout.write('\x1b[2K')
+                print(wrapped_lines[i])
+
+            c = key_poller.poll()
+            if c == 'q':
+                show_cursor()
+                os.system('clear')
+                break
+            if c == 'j':
+                current_line += 1
+                current_line = min(current_line, rows)
+            if c == 'k':
+                current_line += -1
+                current_line = max(current_line, 0)
+            if c == 'e':
+                try:
+                    EDITOR = os.environ.get('EDITOR')
+                    call([EDITOR, lyrics_file])
+                    with open(lyrics_file, 'r') as f:
+                        lyrics = ''.join(f.readlines())
+                        lines = lyrics.split('\n')
+                    hide_cursor()
+                except TypeError:
+                    os.system('clear')
+                    # TODO: Refresh function
+                    print('$EDITOR is not set')
+                    time.sleep(1)
 
 if __name__ == '__main__':
     main()
