@@ -185,8 +185,9 @@ def main(canvas):
                 os.system('clear')
                 break
             if c == 'j':
-                current_line += 1
-                current_line = min(current_line, len(wrapped_lines)-1)
+                if rows-5 == (min(rows+current_line-5, len(wrapped_lines))) - current_line:
+                    current_line += 1
+                    current_line = min(current_line, len(wrapped_lines)-1)
             if c == 'k':
                 current_line += -1
                 current_line = max(current_line, 0)
