@@ -51,7 +51,7 @@ class KeyPoller():
         dr,dw,de = select.select([sys.stdin], [], [], 0.0)
         return sys.stdin.read(1) if not dr == [] else None
 
-def get_lyrics(artist, title):
+def fetch_lyrics(artist, title):
     title = re.sub(r'(-.*)', '', title)
     search_string = f'{artist} {title} lyrics'
     search_string = urllib.parse.quote_plus(search_string)
@@ -99,33 +99,47 @@ def save_lyrics(lyrics, lyrics_file):
 
 atexit.register(show_cursor)
 
-@ueberzug.Canvas()
-def main(canvas):
-    rows, columns = terminal_size()
-    song, artist, album, art_url = get_spotify_song_data()
-
+def get_lyrics(song, artist, album, art_url):
     home = str(Path.home())
     lyrics_directory = os.path.join(home, '.cache', 'spotify-lyrics')
     artist_directory = os.path.join(lyrics_directory, artist.replace('/', ''))
+    album_directory = os.path.join(artist_directory, album.replace('/', ''))
     image_directory = os.path.join(artist_directory, 'album_arts')
-    lyrics_file = os.path.join(artist_directory, song.replace('/', ''))
+    lyrics_file = os.path.join(album_directory, song.replace('/', ''))
     image_file = '{}.png'.format(os.path.join(image_directory, album))
 
     if not os.path.isdir(lyrics_directory): os.mkdir(lyrics_directory)
     if not os.path.isdir(artist_directory): os.mkdir(artist_directory)
+    if not os.path.isdir(album_directory): os.mkdir(album_directory)
     if not os.path.isdir(image_directory): os.mkdir(image_directory)
 
     if not os.path.exists(lyrics_file):
-        lyrics = get_lyrics(artist, song)
+        lyrics = fetch_lyrics(artist, song)
         save_lyrics(lyrics, lyrics_file)
     else:
         lyrics = read_lyrics(lyrics_file)
+
 
     try:
         if not os.path.exists(image_file):
             urlretrieve(art_url, image_file)
     except FileNotFoundError:
         pass
+    except urllib.error.URLError:
+        pass
+
+    data = {'lyrics': lyrics,
+            'lyrics_file': lyrics_file,
+            'image_file': image_file}
+
+    return lyrics, lyrics_file, image_file
+
+
+@ueberzug.Canvas()
+def main(canvas):
+    rows, columns = terminal_size()
+    song, artist, album, art_url = get_spotify_song_data()
+    lyrics, lyrics_file, image_file = get_lyrics(song, artist, album, art_url)
 
     album_cover = canvas.create_placement('album_cover',
                                           x=columns//2, y=4,
@@ -143,6 +157,20 @@ def main(canvas):
     old_rows, old_columns = rows, columns
     with KeyPoller() as key_poller:
         while True:
+            new_song, new_artist, new_album, new_art_url = get_spotify_song_data()
+            if new_song != song or new_artist!= artist:
+                lyrics, lyrics_file, image_file = get_lyrics(new_song, new_artist,
+                                                             new_album, new_art_url)
+                album_cover.path = image_file
+                song = new_song
+                artist = new_artist
+                album = new_album
+                art_url = new_art_url
+
+                os.system('clear')
+                move_cursor(0, 0)
+                print_metadata(artist, album, song)
+
             rows, columns = terminal_size()
             if old_rows != rows or old_columns != columns:
                 difference = rows - old_rows
@@ -177,14 +205,14 @@ def main(canvas):
             if c == 'q':
                 os.system('clear')
                 break
-            if c == 'j':
+            elif c == 'j':
                 if rows - start_row == n_entries:
                     current_line += 1
                     current_line = min(current_line, len(wrapped_lines)-1)
-            if c == 'k':
+            elif c == 'k':
                 current_line += -1
                 current_line = max(current_line, 0)
-            if c == 'e':
+            elif c == 'e':
                 try:
                     EDITOR = os.environ.get('EDITOR')
                     call([EDITOR, lyrics_file])
@@ -194,13 +222,13 @@ def main(canvas):
                     os.system('clear')
                     print('$EDITOR is not set')
                     time.sleep(1)
-            if c == 'r':
+            elif c == 'r':
                 os.system('clear')
                 move_cursor(0, 0)
                 print_metadata(artist, album, song)
-            if c == 'd':
+            elif c == 'd':
                 os.remove(lyrics_file)
-                lyrics = get_lyrics(artist, song)
+                lyrics = fetch_lyrics(artist, song)
                 save_lyrics(lyrics, lyrics_file)
 
 if __name__ == '__main__':
