@@ -173,9 +173,9 @@ class Lyrics(object):
                 elif key == 'h':
                     os.system('clear')
                     album_cover.visibility = ueberzug.Visibility.INVISIBLE
-                    utils.move_cursor(0, start_row)
+                    utils.move_cursor(0, 0)
                     utils.print_help()
-                    time.sleep(2)
+                    time.sleep(5)
                     self.print_metadata()
                     album_cover.visibility = ueberzug.Visibility.VISIBLE
 

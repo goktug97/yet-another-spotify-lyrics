@@ -35,8 +35,8 @@ spotify-lyrics
 
 | Action        | Keybinding   |
 |:-------------:|:------------:|
-| Scrool Up     | <kbd>k</kbd> |
-| Scrool Down   | <kbd>j</kbd> |
+| Scroll Up     | <kbd>k</kbd> |
+| Scroll Down   | <kbd>j</kbd> |
 | Edit Lyrics   | <kbd>e</kbd> |
 | Refresh       | <kbd>r</kbd> |
 | Toggle        | <kbd>t</kbd> |
@@ -52,7 +52,7 @@ spotify-lyrics
 - Next: Play next song.
 - Prev: Play previous song.
 - Update Lyrics: Deletes cached lyrics and fetches lyrics from the internet. 
-- Help: Show keybindings 2 seconds.
+- Help: Show keybindings 5 seconds.
 
 ### Example Use Case (i3wm)
 ```i3

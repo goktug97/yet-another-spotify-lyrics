@@ -96,8 +96,8 @@ def print_help():
     print(boldify('''
 | Action        | Keybinding   |
 |:-------------:|:------------:|
-| Scrool Up     |      k       |
-| Scrool Down   |      j       |
+| Scroll Up     |      k       |
+| Scroll Down   |      j       |
 | Edit Lyrics   |      e       |
 | Refresh       |      r       |
 | Toggle        |      t       |
@@ -113,4 +113,4 @@ def print_help():
 - Next: Play next song.
 - Prev: Play previous song.
 - Update Lyrics: Deletes cached lyrics and fetches lyrics from the internet.
-- Help: Show keybindings 2 seconds.'''))
+- Help: Show keybindings 5 seconds.'''))
