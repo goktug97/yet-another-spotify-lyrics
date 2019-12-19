@@ -26,6 +26,7 @@ class Lyrics(object):
     def __init__(self):
         self.spotify = utils.Spotify()
         self.home = str(Path.home())
+        self.current_line = 0
 
     def update_directories(self):
         self.lyrics_directory = os.path.join(self.home, '.cache', 'spotify-lyrics')
@@ -52,6 +53,8 @@ class Lyrics(object):
             pass
 
     def print_metadata(self):
+        os.system('clear')
+        utils.move_cursor(0, 0)
         print(f'\033[95mArtist: {self.artist}\033[0m')
         print(f'\033[95mAlbum: {self.album}\033[0m')
         print(f'\033[95mSong: {self.song}\033[0m')
@@ -71,6 +74,7 @@ class Lyrics(object):
             self.save_lyrics()
         else:
             self.lyrics = self.read_lyrics()
+        self.current_line = 0
 
     @ueberzug.Canvas()
     def main(self, canvas):
@@ -90,11 +94,8 @@ class Lyrics(object):
 
         utils.hide_cursor()
 
-        os.system('clear')
-        utils.move_cursor(0, 0)
         self.print_metadata()
 
-        current_line = 0
         start_row = 5
 
         with utils.KeyPoller() as key_poller:
@@ -107,11 +108,7 @@ class Lyrics(object):
                     self.art_url = art_url
                     self.update_directories()
                     self.update_lyrics()
-
                     album_cover.path = self.image_file
-
-                    os.system('clear')
-                    utils.move_cursor(0, 0)
                     self.print_metadata()
 
                 rows, columns = utils.terminal_size()
@@ -119,13 +116,10 @@ class Lyrics(object):
                     difference = rows - self.rows
                     self.rows, self.columns = rows, columns
                     if difference > 0:
-                        current_line -= difference
-                        current_line = max(0, current_line)
-                        current_line = min(current_line, len(wrapped_lines)-1)
+                        self.current_line -= difference
+                        self.current_line = max(0, self.current_line)
+                        self.current_line = min(self.current_line, len(wrapped_lines)-1)
                     album_cover.x = self.columns//2
-
-                    os.system('clear')
-                    utils.move_cursor(0, 0)
                     self.print_metadata()
 
                 lines = self.lyrics.split('\n')
@@ -135,9 +129,9 @@ class Lyrics(object):
                         textwrap.fill(line, columns//2-2).split('\n'))
 
                 utils.move_cursor(0, start_row)
-                n_entries = min(rows+current_line-start_row,
-                                len(wrapped_lines)) - current_line
-                for i in range(current_line, current_line + n_entries):
+                n_entries = min(rows+self.current_line-start_row,
+                                len(wrapped_lines)) - self.current_line
+                for i in range(self.current_line, self.current_line + n_entries):
                     utils.delete_line()
                     print(utils.boldify(wrapped_lines[i]))
                 utils.move_cursor(0, n_entries+start_row)
@@ -149,24 +143,23 @@ class Lyrics(object):
                     break
                 elif key == 'j':
                     if rows - start_row == n_entries:
-                        current_line += 1
-                        current_line = min(current_line, len(wrapped_lines)-1)
+                        self.current_line += 1
+                        self.current_line = min(self.current_line, len(wrapped_lines)-1)
                 elif key == 'k':
-                    current_line += -1
-                    current_line = max(current_line, 0)
+                    self.current_line += -1
+                    self.current_line = max(self.current_line, 0)
                 elif key == 'e':
                     try:
                         EDITOR = os.environ.get('EDITOR')
                         call([EDITOR, self.lyrics_file])
                         self.update_lyrics()
+                        self.print_metadata()
                         utils.hide_cursor()
                     except TypeError:
                         os.system('clear')
                         print('$EDITOR is not set')
                         time.sleep(1)
                 elif key == 'r':
-                    os.system('clear')
-                    utils.move_cursor(0, 0)
                     self.print_metadata()
                 elif key == 'd':
                     os.remove(self.lyrics_file)
