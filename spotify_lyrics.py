@@ -173,6 +173,8 @@ def main(canvas):
             for i in range(current_line, current_line + n_entries):
                 delete_line()
                 print(boldify(wrapped_lines[i]))
+            move_cursor(0, n_entries+start_row)
+            delete_line()
 
             c = key_poller.poll()
             if c == 'q':

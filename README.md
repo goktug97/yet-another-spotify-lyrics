@@ -1,7 +1,7 @@
 Yet Another Spotify Command Line Lyrics
 ==========================================
 
-![Lyrics-Screenshot](https://github.com/goktug97/yet-another-spotify-lyrics/blob/master/screenshot.jpg)
+![Lyrics-Screenshot](https://raw.githubusercontent.com/goktug97/yet-another-spotify-lyrics/master/screenshot.jpg)
 
 ## Requirements
 * ueberzug
