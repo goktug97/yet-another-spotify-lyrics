@@ -1,22 +1,27 @@
-# Yet Another Spotify Command Line Lyrics
+Yet Another Spotify Command Line Lyrics
+==========================================
+
+![Lyrics-Screenshot](https://github.com/goktug97/yet-another-spotify-lyrics/blob/master/screenshot.jpg)
 
 ## Requirements
 * ueberzug
-* python-dbus
-* request
+* dbus-python
+* requests
 * beautifulsoup4
 * lxml
 
-## Screenshot
-
-![Lyrics-Screenshot](https://github.com/goktug97/yet-another-spotify-lyrics/blob/master/lyrics-screenshot.jpg)
-
 ## Install
 
+### From PyPI
+```bash
+pip3 install yet-another-spotify-lyrics --user
+```
+
+### From Source
 ```bash
 git clone https://github.com/goktug97/yet-another-spotify-lyrics
 cd yet-another-spotify-lyrics
-python setup.py install
+python setup.py install --user
 ```
 
 ## Usage
@@ -25,10 +30,28 @@ python setup.py install
 spotify-lyrics
 ```
 
-## example i3 settings for the script
+### Keybindings
+
+| Action        | Keybinding   |
+|:-------------:|:------------:|
+| scrool-up     | <kbd>k</kbd> |
+| scrool-down   | <kbd>j</kbd> |
+| edit-lyrics   | <kbd>e</kbd> |
+| refresh       | <kbd>r</kbd> |
+| delete-cached | <kbd>d</kbd> |
+| quit-program  | <kbd>q</kbd> |
+
+- edit-lyrics: Open lyrics in `$EDITOR`
+- refresh: Re-prints lyrics and song info.
+- delete-cached: Deletes cached lyrics and gets lyrics from the internet. 
+
+### Example Use Case (i3wm)
 ```i3
 bindsym $mod+Shift+Home exec st -n Lyrics -e spotify-lyrics
 for_window [instance="Lyrics"] floating enable; [instance="Lyrics"] move position center
 for_window [instance="Lyrics"] resize set 644 388
 ```
+
+## License
+yet-another-spotify-lyrics is licensed under the MIT License.
 
