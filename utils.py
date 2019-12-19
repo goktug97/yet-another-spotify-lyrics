@@ -91,3 +91,26 @@ class Spotify(object):
 
     def toggle(self):
         self.player_interface.PlayPause()
+
+def print_help():
+    print(boldify('''
+| Action        | Keybinding   |
+|:-------------:|:------------:|
+| Scrool Up     |      k       |
+| Scrool Down   |      j       |
+| Edit Lyrics   |      e       |
+| Refresh       |      r       |
+| Toggle        |      t       |
+| Next          |      n       |
+| Prev          |      p       |
+| Update Lyrics |      d       |
+| Help          |      h       |
+| Quit Program  |      q       |
+
+- Edit Lyrics: Open lyrics in `$EDITOR`.
+- Refresh: Refresh lyrics and song metadata.
+- Toggle: Play or Pause currently playing song.
+- Next: Play next song.
+- Prev: Play previous song.
+- Update Lyrics: Deletes cached lyrics and fetches lyrics from the internet.
+- Help: Show keybindings 2 seconds.'''))

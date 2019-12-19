@@ -170,6 +170,15 @@ class Lyrics(object):
                     self.spotify.prev()
                 elif key == 't':
                     self.spotify.toggle()
+                elif key == 'h':
+                    os.system('clear')
+                    album_cover.visibility = ueberzug.Visibility.INVISIBLE
+                    utils.move_cursor(0, start_row)
+                    utils.print_help()
+                    time.sleep(2)
+                    self.print_metadata()
+                    album_cover.visibility = ueberzug.Visibility.VISIBLE
+
 
 def main():
     Lyrics().main()

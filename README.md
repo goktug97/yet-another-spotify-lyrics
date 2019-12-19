@@ -43,6 +43,7 @@ spotify-lyrics
 | Next          | <kbd>n</kbd> |
 | Prev          | <kbd>p</kbd> |
 | Update Lyrics | <kbd>d</kbd> |
+| Help          | <kbd>h</kbd> |
 | Quit Program  | <kbd>q</kbd> |
 
 - Edit Lyrics: Open lyrics in `$EDITOR`.
@@ -51,6 +52,7 @@ spotify-lyrics
 - Next: Play next song.
 - Prev: Play previous song.
 - Update Lyrics: Deletes cached lyrics and fetches lyrics from the internet. 
+- Help: Show keybindings 2 seconds.
 
 ### Example Use Case (i3wm)
 ```i3
