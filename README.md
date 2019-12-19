@@ -25,6 +25,7 @@ python setup.py install --user
 ```
 
 ## Usage
+![Usage Gif](https://raw.githubusercontent.com/goktug97/yet-another-spotify-lyrics/master/usage.gif)
 
 ``` bash
 spotify-lyrics
@@ -56,6 +57,22 @@ spotify-lyrics
 bindsym $mod+Shift+Home exec st -n Lyrics -e spotify-lyrics
 for_window [instance="Lyrics"] floating enable; [instance="Lyrics"] move position center
 for_window [instance="Lyrics"] resize set 644 388
+```
+
+### Example Use Case (Emacs)
+Open the lyrics in a buffer.
+
+``` emacs-lisp
+(defun spotify-lyrics ()
+  (interactive)
+  (let ((string (shell-command-to-string "spotify-lyrics-once")))
+    (get-buffer-create "lyrics-buffer")
+    (switch-to-buffer-other-window "lyrics-buffer")
+    (with-current-buffer "lyrics-buffer"
+      (goto-char (point-max))
+      (erase-buffer)
+      (insert string)
+      (goto-line 1))))
 ```
 
 ### Example Use Case (Conky)
