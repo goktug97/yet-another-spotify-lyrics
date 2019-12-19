@@ -139,7 +139,6 @@ def main(canvas):
 
     current_line = 0
     start_row = 5
-    old_lyrics = None
 
     old_rows, old_columns = rows, columns
     with KeyPoller() as key_poller:
@@ -159,13 +158,11 @@ def main(canvas):
 
                 old_rows, old_columns = rows, columns
 
-            if lyrics != old_lyrics:
-                lines = lyrics.split('\n')
-                wrapped_lines = []
-                for line in lines:
-                    wrapped_lines.extend(
-                        textwrap.fill(line, columns//2-2).split('\n'))
-                old_lyrics = lyrics
+            lines = lyrics.split('\n')
+            wrapped_lines = []
+            for line in lines:
+                wrapped_lines.extend(
+                    textwrap.fill(line, columns//2-2).split('\n'))
 
             move_cursor(0, start_row)
             n_entries = min(rows+current_line-start_row,
@@ -199,6 +196,7 @@ def main(canvas):
                     time.sleep(1)
             if c == 'r':
                 os.system('clear')
+                move_cursor(0, 0)
                 print_metadata(artist, album, song)
             if c == 'd':
                 os.remove(lyrics_file)
