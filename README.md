@@ -34,16 +34,22 @@ spotify-lyrics
 
 | Action        | Keybinding   |
 |:-------------:|:------------:|
-| scrool-up     | <kbd>k</kbd> |
-| scrool-down   | <kbd>j</kbd> |
-| edit-lyrics   | <kbd>e</kbd> |
-| refresh       | <kbd>r</kbd> |
-| delete-cached | <kbd>d</kbd> |
-| quit-program  | <kbd>q</kbd> |
+| Scrool Up     | <kbd>k</kbd> |
+| Scrool Down   | <kbd>j</kbd> |
+| Edit Lyrics   | <kbd>e</kbd> |
+| Refresh       | <kbd>r</kbd> |
+| Toggle        | <kbd>t</kbd> |
+| Next          | <kbd>n</kbd> |
+| Prev          | <kbd>p</kbd> |
+| Update Lyrics | <kbd>d</kbd> |
+| Quit Program  | <kbd>q</kbd> |
 
-- edit-lyrics: Open lyrics in `$EDITOR`
-- refresh: Re-prints lyrics and song info.
-- delete-cached: Deletes cached lyrics and gets lyrics from the internet. 
+- Edit Lyrics: Open lyrics in `$EDITOR`.
+- Refresh: Refresh lyrics and song metadata.
+- Toggle: Play or Pause currently playing song.
+- Next: Play next song.
+- Prev: Play previous song.
+- Update Lyrics: Deletes cached lyrics and fetches lyrics from the internet. 
 
 ### Example Use Case (i3wm)
 ```i3
