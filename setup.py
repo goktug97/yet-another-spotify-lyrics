@@ -8,7 +8,7 @@ with open(os.path.join(directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='yet-another-spotify-lyrics',
-      version='2.2.2',
+      version='2.2.3',
       description='Command Line Spotify Lyrics with Album Cover',
       author='Göktuğ Karakaşlı',
       author_email='karakasligk@gmail.com',
@@ -17,7 +17,7 @@ setup(name='yet-another-spotify-lyrics',
       long_description_content_type='text/markdown',
       url='https://github.com/goktug97/yet-another-spotify-lyrics',
       download_url=(
-          'https://github.com/goktug97/yet-another-spotify-lyrics/archive/v2.2.2.tar.gz'),
+          'https://github.com/goktug97/yet-another-spotify-lyrics/archive/v2.2.3.tar.gz'),
       py_modules=[os.path.splitext(os.path.basename(path))[0]
                   for path in ['spotify_lyrics',
                                'utils',

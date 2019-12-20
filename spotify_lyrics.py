@@ -178,6 +178,7 @@ class Lyrics(object):
                     time.sleep(5)
                     self.print_metadata()
                     album_cover.visibility = ueberzug.Visibility.VISIBLE
+                    key_poller.flush()
 
 
 def main():

@@ -59,6 +59,9 @@ class KeyPoller():
         dr,dw,de = select.select([sys.stdin], [], [], 0.0)
         return sys.stdin.read(1) if not dr == [] else None
 
+    def flush(self):
+        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+
 
 class Spotify(object):
     def __init__(self):
