@@ -4,6 +4,8 @@ Yet Another Spotify Command Line Lyrics
 ![Lyrics-Screenshot](https://raw.githubusercontent.com/goktug97/yet-another-spotify-lyrics/master/screenshot.jpg)
 
 ## Requirements
+* Linux
+* Python >= 3.6
 * ueberzug
 * dbus-python
 * requests
@@ -33,18 +35,20 @@ spotify-lyrics
 
 ### Keybindings
 
-| Action        | Keybinding   |
-|:-------------:|:------------:|
-| Scroll Up     | <kbd>k</kbd> |
-| Scroll Down   | <kbd>j</kbd> |
-| Edit Lyrics   | <kbd>e</kbd> |
-| Refresh       | <kbd>r</kbd> |
-| Toggle        | <kbd>t</kbd> |
-| Next          | <kbd>n</kbd> |
-| Prev          | <kbd>p</kbd> |
-| Update Lyrics | <kbd>d</kbd> |
-| Help          | <kbd>h</kbd> |
-| Quit Program  | <kbd>q</kbd> |
+| Action              | Keybinding    |
+|:-------------------:|:-------------:|
+| Scroll Up           | <kbd>k</kbd>  |
+| Scroll Down         | <kbd>j</kbd>  |
+| Beginning of Lyrics | <kbd>gg</kbd> |
+| End of Lyrics       | <kbd>G</kbd>  |
+| Edit Lyrics         | <kbd>e</kbd>  |
+| Refresh             | <kbd>r</kbd>  |
+| Toggle              | <kbd>t</kbd>  |
+| Next                | <kbd>n</kbd>  |
+| Prev                | <kbd>p</kbd>  |
+| Update Lyrics       | <kbd>d</kbd>  |
+| Help                | <kbd>h</kbd>  |
+| Quit Program        | <kbd>q</kbd>  |
 
 - Edit Lyrics: Open lyrics in `$EDITOR`.
 - Refresh: Refresh lyrics and song metadata.

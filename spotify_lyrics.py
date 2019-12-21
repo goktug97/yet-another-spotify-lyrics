@@ -118,7 +118,8 @@ class Lyrics(object):
                     if difference > 0:
                         self.current_line -= difference
                         self.current_line = max(0, self.current_line)
-                        self.current_line = min(self.current_line, len(wrapped_lines)-1)
+                        self.current_line = min(self.current_line,
+                                len(wrapped_lines)-n_entries)
                     album_cover.x = self.columns//2
                     self.print_metadata()
 
@@ -138,47 +139,54 @@ class Lyrics(object):
                 utils.delete_line()
 
                 key = key_poller.poll()
-                if key == 'q':
-                    os.system('clear')
-                    break
-                elif key == 'j':
-                    if rows - start_row == n_entries:
-                        self.current_line += 1
-                        self.current_line = min(self.current_line, len(wrapped_lines)-1)
-                elif key == 'k':
-                    self.current_line += -1
-                    self.current_line = max(self.current_line, 0)
-                elif key == 'e':
-                    try:
-                        EDITOR = os.environ.get('EDITOR')
-                        call([EDITOR, self.lyrics_file])
-                        self.update_lyrics()
-                        self.print_metadata()
-                        utils.hide_cursor()
-                    except TypeError:
+                if key is not None:
+                    if key == 'q':
                         os.system('clear')
-                        print('$EDITOR is not set')
-                        time.sleep(1)
-                elif key == 'r':
-                    self.print_metadata()
-                elif key == 'd':
-                    os.remove(self.lyrics_file)
-                    self.update_lyrics()
-                elif key == 'n':
-                    self.spotify.next()
-                elif key == 'p':
-                    self.spotify.prev()
-                elif key == 't':
-                    self.spotify.toggle()
-                elif key == 'h':
-                    os.system('clear')
-                    album_cover.visibility = ueberzug.Visibility.INVISIBLE
-                    utils.move_cursor(0, 0)
-                    utils.print_help()
-                    time.sleep(5)
-                    self.print_metadata()
-                    album_cover.visibility = ueberzug.Visibility.VISIBLE
-                    key_poller.flush()
+                        break
+                    elif key == 'j' or ord(key) == 5:
+                        self.current_line += 1
+                        self.current_line = min(self.current_line,
+                                len(wrapped_lines)-n_entries)
+                    elif key == 'k' or ord(key) == 25:
+                        self.current_line += -1
+                        self.current_line = max(self.current_line, 0)
+                    elif key == 'e':
+                        try:
+                            EDITOR = os.environ.get('EDITOR')
+                            call([EDITOR, self.lyrics_file])
+                            self.update_lyrics()
+                            self.print_metadata()
+                            utils.hide_cursor()
+                        except TypeError:
+                            os.system('clear')
+                            print('$EDITOR is not set')
+                            time.sleep(1)
+                    elif key == 'r':
+                        self.print_metadata()
+                    elif key == 'd':
+                        os.remove(self.lyrics_file)
+                        self.update_lyrics()
+                    elif key == 'n':
+                        self.spotify.next()
+                    elif key == 'p':
+                        self.spotify.prev()
+                    elif key == 't':
+                        self.spotify.toggle()
+                    elif key == 'h':
+                        os.system('clear')
+                        album_cover.visibility = ueberzug.Visibility.INVISIBLE
+                        utils.move_cursor(0, 0)
+                        utils.print_help()
+                        time.sleep(5)
+                        self.print_metadata()
+                        album_cover.visibility = ueberzug.Visibility.VISIBLE
+                        key_poller.flush()
+                    elif key == 'g':
+                        modified_key = key_poller.poll(timeout=1.0)
+                        if modified_key == 'g':
+                            self.current_line = 0
+                    elif key == 'G':
+                        self.current_line = len(wrapped_lines)-n_entries
 
 
 def main():
