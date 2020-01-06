@@ -26,7 +26,8 @@ class Lyrics(object):
     def __init__(self):
         self.spotify = utils.Spotify()
         self.home = str(Path.home())
-        self.current_line = 0
+        self._current_line = 0
+        self.changed = True
 
     def update_directories(self):
         self.lyrics_directory = os.path.join(self.home, '.cache', 'spotify-lyrics')
@@ -52,7 +53,17 @@ class Lyrics(object):
         except urllib.error.URLError:
             pass
 
+    @property
+    def current_line(self):
+        return self._current_line
+
+    @current_line.setter
+    def current_line(self, value):
+        self._current_line = value
+        self.changed = True
+
     def print_metadata(self):
+        self.changed = True
         os.system('clear')
         utils.move_cursor(0, 0)
         print(f'\033[95mArtist: {self.artist}\033[0m')
@@ -123,22 +134,24 @@ class Lyrics(object):
                     album_cover.x = self.columns//2
                     self.print_metadata()
 
-                lines = self.lyrics.split('\n')
-                wrapped_lines = []
-                for line in lines:
-                    wrapped_lines.extend(
-                        textwrap.fill(line, columns//2-2).split('\n'))
+                if self.changed:
+                    lines = self.lyrics.split('\n')
+                    wrapped_lines = []
+                    for line in lines:
+                        wrapped_lines.extend(
+                            textwrap.fill(line, columns//2-2).split('\n'))
 
-                utils.move_cursor(0, start_row)
-                n_entries = min(rows+self.current_line-start_row,
-                                len(wrapped_lines)) - self.current_line
-                for i in range(self.current_line, self.current_line + n_entries):
+                    utils.move_cursor(0, start_row)
+                    n_entries = min(rows+self.current_line-start_row,
+                                    len(wrapped_lines)) - self.current_line
+                    for i in range(self.current_line, self.current_line + n_entries):
+                        utils.delete_line()
+                        print(utils.boldify(wrapped_lines[i]))
+                    utils.move_cursor(0, n_entries+start_row)
                     utils.delete_line()
-                    print(utils.boldify(wrapped_lines[i]))
-                utils.move_cursor(0, n_entries+start_row)
-                utils.delete_line()
+                    self.changed = False
 
-                key = key_poller.poll()
+                key = key_poller.poll(timeout=0.1)
                 if key is not None:
                     if key == 'q':
                         os.system('clear')
@@ -153,10 +166,12 @@ class Lyrics(object):
                     elif key == 'e':
                         try:
                             EDITOR = os.environ.get('EDITOR')
+                            album_cover.visibility = ueberzug.Visibility.INVISIBLE
                             call([EDITOR, self.lyrics_file])
                             self.update_lyrics()
                             self.print_metadata()
                             utils.hide_cursor()
+                            album_cover.visibility = ueberzug.Visibility.VISIBLE
                         except TypeError:
                             os.system('clear')
                             print('$EDITOR is not set')
