@@ -2,32 +2,34 @@
 
 import atexit
 import os
-import re
-import select
-import sys
-import termios
 import textwrap
+import threading
 import time
 import urllib.parse
 from pathlib import Path
 from subprocess import call
 from urllib.request import urlretrieve
 
-import dbus
-import requests
+import dbus.mainloop.glib
+import dbus.service
 import ueberzug.lib.v0 as ueberzug
-from bs4 import BeautifulSoup
+from gi.repository import GLib
 
 import utils
 
+
 atexit.register(utils.show_cursor)
 
-class Lyrics(object):
+class Lyrics(dbus.service.Object):
     def __init__(self):
         self.spotify = utils.Spotify()
         self.home = str(Path.home())
         self._current_line = 0
         self.changed = True
+
+        self.bus = dbus.SessionBus()
+        name = dbus.service.BusName('com.spotify_lyrics.line', bus=self.bus)
+        super().__init__(name, '/com/spotify_lyrics')
 
     def update_directories(self):
         self.lyrics_directory = os.path.join(self.home, '.cache', 'spotify-lyrics')
@@ -60,7 +62,13 @@ class Lyrics(object):
     @current_line.setter
     def current_line(self, value):
         self._current_line = value
+        self._current_line = min(self._current_line, self.total_lines-self.n_entries)
+        self._current_line = max(self._current_line, 0)
         self.changed = True
+
+    @dbus.service.method('com.spotify_lyrics.line', signature='v')
+    def move(self, val):
+        self.current_line += max(min(val, 1), -1)
 
     def print_metadata(self):
         self.changed = True
@@ -85,10 +93,10 @@ class Lyrics(object):
             self.save_lyrics()
         else:
             self.lyrics = self.read_lyrics()
-        self.current_line = 0
+        self._current_line = 0
 
     @ueberzug.Canvas()
-    def main(self, canvas):
+    def main(self, loop, event, canvas):
         self.rows, self.columns = utils.terminal_size()
         self.song, self.artist, self.album, self.art_url = self.spotify.metadata()
 
@@ -110,7 +118,7 @@ class Lyrics(object):
         start_row = 5
 
         with utils.KeyPoller() as key_poller:
-            while True:
+            while event.is_set():
                 song, artist, album, art_url = self.spotify.metadata()
                 if self.song != song or self.artist != artist:
                     self.song = song
@@ -130,7 +138,7 @@ class Lyrics(object):
                         self.current_line -= difference
                         self.current_line = max(0, self.current_line)
                         self.current_line = min(self.current_line,
-                                len(wrapped_lines)-n_entries)
+                                self.total_lines-self.n_entries)
                     album_cover.x = self.columns//2
                     self.print_metadata()
 
@@ -140,14 +148,16 @@ class Lyrics(object):
                     for line in lines:
                         wrapped_lines.extend(
                             textwrap.fill(line, columns//2-2).split('\n'))
+                    self.total_lines = len(wrapped_lines)
 
                     utils.move_cursor(0, start_row)
-                    n_entries = min(rows+self.current_line-start_row,
-                                    len(wrapped_lines)) - self.current_line
-                    for i in range(self.current_line, self.current_line + n_entries):
+                    self.n_entries = min(rows+self.current_line-start_row,
+                                    self.total_lines) - self.current_line
+                    for i in range(self.current_line,
+                                   self.current_line + self.n_entries):
                         utils.delete_line()
                         print(utils.boldify(wrapped_lines[i]))
-                    utils.move_cursor(0, n_entries+start_row)
+                    utils.move_cursor(0, self.n_entries+start_row)
                     utils.delete_line()
                     self.changed = False
 
@@ -155,14 +165,13 @@ class Lyrics(object):
                 if key is not None:
                     if key == 'q':
                         os.system('clear')
+                        loop.quit()
+                        event.clear()
                         break
                     elif key == 'j' or ord(key) == 5:
                         self.current_line += 1
-                        self.current_line = min(self.current_line,
-                                len(wrapped_lines)-n_entries)
                     elif key == 'k' or ord(key) == 25:
                         self.current_line += -1
-                        self.current_line = max(self.current_line, 0)
                     elif key == 'e':
                         try:
                             EDITOR = os.environ.get('EDITOR')
@@ -201,11 +210,23 @@ class Lyrics(object):
                         if modified_key == 'g':
                             self.current_line = 0
                     elif key == 'G':
-                        self.current_line = len(wrapped_lines)-n_entries
+                        self.current_line = self.total_lines-self.n_entries
 
 
 def main():
-    Lyrics().main()
+    run_event = threading.Event()
+    run_event.set()
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    loop = GLib.MainLoop()
+
+    try:
+        lyrics_thread = threading.Thread(target=Lyrics().main, args=(loop, run_event))
+        lyrics_thread.start()
+        loop.run()
+    except KeyboardInterrupt:
+        loop.quit()
+        run_event.clear()
+        lyrics_thread.join()
 
 if __name__ == '__main__':
     main()
