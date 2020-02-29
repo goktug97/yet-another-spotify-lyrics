@@ -26,6 +26,7 @@ class Lyrics(dbus.service.Object):
         self.home = str(Path.home())
         self._current_line = 0
         self.changed = True
+        self.album_hidden = False
 
         self.bus = dbus.SessionBus()
         name = dbus.service.BusName('com.spotify_lyrics.line', bus=self.bus)
@@ -147,7 +148,9 @@ class Lyrics(dbus.service.Object):
                     wrapped_lines = []
                     for line in lines:
                         wrapped_lines.extend(
-                            textwrap.fill(line, columns//2-2).split('\n'))
+                            textwrap.fill(
+                                line, (columns if self.album_hidden
+                                               else columns//2-2)).split('\n'))
                     self.total_lines = len(wrapped_lines)
 
                     utils.move_cursor(0, start_row)
@@ -196,6 +199,13 @@ class Lyrics(dbus.service.Object):
                         self.spotify.prev()
                     elif key == 't':
                         self.spotify.toggle()
+                    elif key == 'i':
+                        self.album_hidden = not self.album_hidden
+                        self.changed = True
+                        if self.album_hidden:
+                            album_cover.visibility = ueberzug.Visibility.INVISIBLE
+                        else:
+                            album_cover.visibility = ueberzug.Visibility.VISIBLE
                     elif key == 'h':
                         os.system('clear')
                         album_cover.visibility = ueberzug.Visibility.INVISIBLE

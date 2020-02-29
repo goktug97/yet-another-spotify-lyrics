@@ -98,18 +98,19 @@ def print_help():
     print(boldify('''
 | Action              | Keybinding    |
 |:-------------------:|:-------------:|
-| Scroll Up           | <kbd>k</kbd>  |
-| Scroll Down         | <kbd>j</kbd>  |
-| Beginning of Lyrics | <kbd>gg</kbd> |
-| End of Lyrics       | <kbd>G</kbd>  |
-| Edit Lyrics         | <kbd>e</kbd>  |
-| Refresh             | <kbd>r</kbd>  |
-| Toggle              | <kbd>t</kbd>  |
-| Next                | <kbd>n</kbd>  |
-| Prev                | <kbd>p</kbd>  |
-| Update Lyrics       | <kbd>d</kbd>  |
-| Help                | <kbd>h</kbd>  |
-| Quit Program        | <kbd>q</kbd>  |
+| Scroll Up           |      k        |
+| Scroll Down         |      j        |
+| Beginning of Lyrics |      gg       |
+| End of Lyrics       |      G        |
+| Edit Lyrics         |      e        |
+| Refresh             |      r        |
+| Toggle              |      t        |
+| Next                |      n        |
+| Prev                |      p        |
+| Update Lyrics       |      d        |
+| Toggle Album Cover  |      i        |
+| Help                |      h        |
+| Quit Program        |      q        |
 
 - Edit Lyrics: Open lyrics in `$EDITOR`.
 - Refresh: Refresh lyrics and song metadata.

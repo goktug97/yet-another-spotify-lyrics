@@ -47,6 +47,7 @@ spotify-lyrics
 | Next                | <kbd>n</kbd>  |
 | Prev                | <kbd>p</kbd>  |
 | Update Lyrics       | <kbd>d</kbd>  |
+| Toggle Album Cover  | <kbd>i</kbd>  |
 | Help                | <kbd>h</kbd>  |
 | Quit Program        | <kbd>q</kbd>  |
 
