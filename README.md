@@ -59,11 +59,40 @@ spotify-lyrics
 - Update Lyrics: Deletes cached lyrics and fetches lyrics from the internet. 
 - Help: Show keybindings 5 seconds.
 
+### DBUS
+The lyrics can be scrolled via dbus.
+Scroll the lyrics without changing the focus.
+
+#### Python Example
+
+``` python
+import dbus
+
+bus = dbus.SessionBus()
+lyrics = bus.get_object('com.spotify_lyrics.line', '/com/spotify_lyrics')
+lyrics.move(1) # Scroll Down
+lyrics.move(-1) # Scroll Up
+```
+
+#### Bash Example
+
+``` bash
+#!/usr/bin/env bash
+dbus-send --print-reply --dest="com.spotify_lyrics.line"\
+    "/com/spotify_lyrics"\
+    "com.spotify_lyrics.line.move"\
+    int32:$1 > /dev/null
+```
+
+I call this bash script from my i3 config. See below.
+
 ### Example Use Case (i3wm)
 ```i3
 bindsym $mod+Shift+Home exec st -n Lyrics -e spotify-lyrics
 for_window [instance="Lyrics"] floating enable; [instance="Lyrics"] move position center
 for_window [instance="Lyrics"] resize set 644 388
+bindsym $mod+Control+k exec lyrics-move -1
+bindsym $mod+Control+j exec lyrics-move 1
 ```
 
 ### Example Use Case (Emacs)
