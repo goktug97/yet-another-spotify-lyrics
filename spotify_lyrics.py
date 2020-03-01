@@ -235,6 +235,7 @@ def main():
         loop.run()
     except KeyboardInterrupt:
         loop.quit()
+    finally:
         run_event.clear()
         lyrics_thread.join()
 
