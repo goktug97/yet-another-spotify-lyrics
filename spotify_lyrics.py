@@ -20,6 +20,7 @@ import utils
 
 atexit.register(utils.show_cursor)
 
+
 class Lyrics(dbus.service.Object):
     def __init__(self):
         self.spotify = utils.Spotify()

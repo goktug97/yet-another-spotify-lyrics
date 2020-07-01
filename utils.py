@@ -82,7 +82,7 @@ class Spotify(object):
         title = metadata['xesam:title'].replace("&", "&amp;")
         artist = metadata['xesam:artist'][0].replace("&", "&amp;")
         album = metadata['xesam:album'].replace("&", "&amp;")
-        art_url = metadata['mpris:artUrl'].replace("&", "&amp;")
+        art_url = f"https://i.scdn.co/image/{metadata['mpris:artUrl'].replace('&', '&amp;').split('/')[-1]}"
         return title, artist, album, art_url
 
     def next(self):
