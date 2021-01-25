@@ -111,7 +111,10 @@ class Lyrics(dbus.service.Object):
             x=self.columns//2, y=4,
             scaler=ueberzug.ScalerOption.COVER.value)
         album_cover.path = self.image_file
-        album_cover.visibility = ueberzug.Visibility.VISIBLE
+        if self.album_hidden:
+            album_cover.visibility = ueberzug.Visibility.INVISIBLE
+        else:
+            album_cover.visibility = ueberzug.Visibility.VISIBLE
 
         utils.hide_cursor()
 
@@ -184,7 +187,10 @@ class Lyrics(dbus.service.Object):
                             self.update_lyrics()
                             self.print_metadata()
                             utils.hide_cursor()
-                            album_cover.visibility = ueberzug.Visibility.VISIBLE
+                            if self.album_hidden:
+                                album_cover.visibility = ueberzug.Visibility.INVISIBLE
+                            else:
+                                album_cover.visibility = ueberzug.Visibility.VISIBLE
                         except TypeError:
                             os.system('clear')
                             print('$EDITOR is not set')
