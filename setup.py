@@ -8,7 +8,7 @@ with open(os.path.join(directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='yet-another-spotify-lyrics',
-      version='2.4.2',
+      version='2.4.3',
       description='Command Line Spotify Lyrics with Album Cover',
       author='Göktuğ Karakaşlı',
       author_email='karakasligk@gmail.com',
