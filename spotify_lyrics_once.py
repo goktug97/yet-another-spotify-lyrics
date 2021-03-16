@@ -29,20 +29,10 @@ class Lyrics(object):
         self.image_directory = os.path.join(self.artist_directory, 'album_arts')
         self.lyrics_file = os.path.join(
             self.album_directory, self.song.replace('/', ''))
-        self.image_file = f'{os.path.join(self.image_directory, self.album)}.png'
 
         if not os.path.isdir(self.lyrics_directory): os.mkdir(self.lyrics_directory)
         if not os.path.isdir(self.artist_directory): os.mkdir(self.artist_directory)
         if not os.path.isdir(self.album_directory): os.mkdir(self.album_directory)
-        if not os.path.isdir(self.image_directory): os.mkdir(self.image_directory)
-
-        try:
-            if not os.path.exists(self.image_file):
-                urlretrieve(self.art_url, self.image_file)
-        except FileNotFoundError:
-            pass
-        except urllib.error.URLError:
-            pass
 
     def print_metadata(self):
         print(f'Artist: {self.artist}')

@@ -27,7 +27,7 @@ def boldify(string):
     return f'\033[1m{string}\033[0m'
 
 def fetch_lyrics(artist, title):
-    title = re.sub(r'(-.*)', '', title)
+    title = re.sub(r'[-\*"]', ' ', title)
     search_string = f'{artist} {title} lyrics'
     search_string = urllib.parse.quote_plus(search_string)
     url = 'https://google.com/search?q=' + search_string

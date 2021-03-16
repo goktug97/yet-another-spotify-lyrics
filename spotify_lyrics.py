@@ -220,7 +220,10 @@ class Lyrics(dbus.service.Object):
                         utils.print_help()
                         time.sleep(5)
                         self.print_metadata()
-                        album_cover.visibility = ueberzug.Visibility.VISIBLE
+                        if self.album_hidden:
+                            album_cover.visibility = ueberzug.Visibility.INVISIBLE
+                        else:
+                            album_cover.visibility = ueberzug.Visibility.VISIBLE
                         key_poller.flush()
                     elif key == 'g':
                         modified_key = key_poller.poll(timeout=1.0)
