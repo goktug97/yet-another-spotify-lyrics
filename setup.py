@@ -8,7 +8,7 @@ with open(os.path.join(directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='yet-another-spotify-lyrics',
-      version='2.4.5',
+      version='2.4.6',
       description='Command Line Spotify Lyrics with Album Cover',
       author='Göktuğ Karakaşlı',
       author_email='karakasligk@gmail.com',
@@ -19,8 +19,8 @@ setup(name='yet-another-spotify-lyrics',
       packages = ['spotify_lyrics'],
       entry_points={
           'console_scripts': [
-              'spotify-lyrics = spotify_lyrics:main',
-              'spotify-lyrics-once = spotify_lyrics_once:main'
+              'spotify-lyrics = spotify_lyrics.spotify_lyrics:main',
+              'spotify-lyrics-once = spotify_lyrics.spotify_lyrics_once:main'
           ]
       },
       classifiers=[

@@ -13,7 +13,7 @@ import dbus
 import requests
 from bs4 import BeautifulSoup
 
-import .utils
+from spotify_lyrics import utils
 
 class Lyrics(object):
     def __init__(self):

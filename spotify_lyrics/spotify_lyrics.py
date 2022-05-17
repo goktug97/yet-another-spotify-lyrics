@@ -15,7 +15,7 @@ import dbus.service
 import ueberzug.lib.v0 as ueberzug
 from gi.repository import GLib
 
-import .utils
+from spotify_lyrics import utils
 
 
 atexit.register(utils.show_cursor)
